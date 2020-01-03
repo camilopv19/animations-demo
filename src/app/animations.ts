@@ -1,4 +1,4 @@
-import { trigger, transition, style, animate, state, keyframes, animation, useAnimation, query, animateChild, group } from '@angular/animations';
+import { trigger, transition, style, animate, state, keyframes, animation, useAnimation, query, animateChild, group, stagger } from '@angular/animations';
 
 export let fade = trigger('fade', [
 state('void', style({ opacity: 0 })),
@@ -31,7 +31,7 @@ export let bounceOutLeftAnimation = animation(
         ])
     )
 ,{
-    params:{    //Default parameters for the interpotalion
+    params:{    // Default parameters for the interpotalion
         duration: '2s',
         easing: 'ease-out'
 }});
@@ -77,11 +77,37 @@ export let todoAnimations = trigger('todoAnimations', [
                 style({ transform: 'translateY(-20px)' }),
                 animate(1000)
             ]),
-            query('@todo', animateChild())
+            query('@todo',
+                stagger(300, animateChild())) // Delay between elements
+            /** if the animatechild() is not used and there are steps defined, the problem
+             *  will be the new items won't be animated because of the container.
+             */
         // .className, #id
         // See Pseudo-selector tokens: DevStudy/Angular/Animations
         ]),
         query('@bounce', animateChild())
         // @todoAnimations and @todo are grouped and @bounce in sequence
+    ])
+]);
+
+export const zippyAnimation = trigger('expandCollapse', [
+    state('collapsed', style({
+        height: 0,
+        paddingTop: 0,
+        paddingBottom: 0,
+        opacity: 0
+    })),
+    transition('collapsed => expanded', [
+        animate('300ms ease-out', style({
+            height: '*',
+            paddingTop: '*',
+            paddingBottom: '*'
+        })),
+        animate('1s ease-out', style({
+            opacity: 1
+        })),
+    ]),
+    transition('expanded => collapsed', [
+        animate('1s ease-in')
     ])
 ]);
